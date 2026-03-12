@@ -1,17 +1,10 @@
-﻿namespace Basket.API.Data;
+﻿using Microsoft.Extensions.Caching.Distributed;
+
+namespace Basket.API.Data;
 
 public class CachedBasketRepository(IBasketRepository repository, IDistributedCache cache)
     : IBasketRepository
 {
-    public async Task<bool> DeleteBasketAsync(string userName, CancellationToken cancellationToken = default)
-    {
-        await repository.DeleteBasketAsync(userName, cancellationToken);
-
-        await cache.RemoveAsync(userName, cancellationToken);
-
-        return true;
-    }
-
     public async Task<ShoppingCart?> GetBasket(string userName, CancellationToken cancellationToken = default)
     {
         var cachedBasket = await cache.GetStringAsync(userName, cancellationToken);
@@ -30,5 +23,16 @@ public class CachedBasketRepository(IBasketRepository repository, IDistributedCa
         await cache.SetStringAsync(basket.UserName, JsonSerializer.Serialize(basket), cancellationToken);
         return basket;
     }
+
+    public async Task<bool> DeleteBasketAsync(string userName, CancellationToken cancellationToken = default)
+    {
+        await repository.DeleteBasketAsync(userName, cancellationToken);
+
+        await cache.RemoveAsync(userName, cancellationToken);
+
+        return true;
+    }
 }
+
+// docker exec -it distributedcache redis-cli ping
 

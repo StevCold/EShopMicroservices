@@ -15,5 +15,7 @@
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
     <None Include="docker-compose.yml" />
+    <None Include="proto src\Discounts\Discount.Grpc\Protos\discount.proto" />
+    <None Include="src\Order.Application\Orders\Commands\CreateOrder\UpdateOrder\UpdateOrderHandler.cs" />
   </ItemGroup>
 </Project>
