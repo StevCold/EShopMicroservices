@@ -12,7 +12,7 @@ public class UpdateOrderHandler(IApplicationDbContext dbContext)
 
         var orderId = OrderId.Of(command.Order.Id);
         var order = await dbContext.Orders
-            .FindAsync([orderId], cancellationToken: cancellationToken);
+            .FindAsync(orderId, cancellationToken);
 
         if (order is null)
         {

@@ -1,7 +1,8 @@
-﻿namespace Ordering.API.Endpoints;
+using Ordering.Application.Orders.Commands.CreateOrder;
+
+namespace Ordering.API.Endpoints;
 
 public record CreateOrderRequest(OrderDto Order);
-
 public record CreateOrderResponse(Guid OrderId);
 
 public class CreateOrder : ICarterModule
@@ -10,20 +11,14 @@ public class CreateOrder : ICarterModule
     {
         app.MapPost("/orders", async (CreateOrderRequest request, ISender sender) =>
         {
-            var command = request.Adapt<CreateOrderCommand>();
-
+            var command = new CreateOrderCommand(request.Order);
             var result = await sender.Send(command);
-
-            var response = new CreateOrderResponse(result.Id);
-
-            return Results.Created($"/orders/{response.OrderId}", response);
+            return Results.Created($"/orders/{result.Id}", new CreateOrderResponse(result.Id));
         })
         .WithName("CreateOrder")
         .Produces<CreateOrderResponse>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Create Order")
-        .WithDescription("Creates a new order with the provided details.");
-
+        .WithDescription("Creates a new order");
     }
 }
-

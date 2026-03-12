@@ -1,4 +1,4 @@
-﻿using Ordering.Application.Orders.Commands.UpdateOrder;
+using Ordering.Application.Orders.Commands.UpdateOrder;
 
 namespace Ordering.API.Endpoints;
 
@@ -11,15 +11,14 @@ public class UpdateOrder : ICarterModule
     {
         app.MapPut("/orders", async (UpdateOrderRequest request, ISender sender) =>
         {
-            var command = request.Adapt<UpdateOrderCommand>();
+            var command = new UpdateOrderCommand(request.Order);
             var result = await sender.Send(command);
-            var response = result.Adapt<UpdateOrderResponse>();
-            return Results.Ok(response);
+            return Results.Ok(new UpdateOrderResponse(result.IsSuccess));
         })
         .WithName("UpdateOrder")
         .Produces<UpdateOrderResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Update Order")
-        .WithDescription("Updates an existing order with the provided details.");
+        .WithDescription("Updates an existing order");
     }
 }

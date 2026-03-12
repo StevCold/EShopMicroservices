@@ -12,7 +12,7 @@ public class DeleteOrderHandler(IApplicationDbContext dbContext)
 
         var orderId = OrderId.Of(command.OrderId);
         var order = await dbContext.Orders
-            .FindAsync([orderId], cancellationToken: cancellationToken);
+            .FindAsync(orderId, cancellationToken);
 
         if (order is null)
         {

@@ -5,33 +5,26 @@ using Ordering.Infrastructure.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//add services to the container
-
-//configure the http request pipeline
-// ----------------------------------
-// Infrastrucrue - EF Core
-// Application - MediatR
-// API - Controllers
-
-//builder.Services.
-//     .AddApplicationServices()
-//     .AddInfrastructureServices(builder.Configuration)
-//     .AddApiServices();
-// ----------------------------------
-
 builder.Services
     .AddApplicationServices()
     .AddInfrastructureServices(builder.Configuration)
     .AddApiServices();
 
-
 var app = builder.Build();
+
 app.UseApiServices();
 
+// Initialize database
 if (app.Environment.IsDevelopment())
 {
-    await app.InitialDatabaseAsync();
+    try
+    {
+        await app.InitialDatabaseAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database init failed: {ex.Message}");
+    }
 }
 
-//configure the http request pipeline
 app.Run();

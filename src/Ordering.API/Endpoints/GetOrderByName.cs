@@ -1,22 +1,22 @@
-﻿
+using Ordering.Application.Orders.Queries.GetOrdersByName;
+
 namespace Ordering.API.Endpoints;
-public record GetOrderByNameRequest(string Name);
-public record GetOrderByNameResult(bool IsSuccess);
+
+public record GetOrdersByNameResponse(IEnumerable<OrderDto> Orders);
+
 public class GetOrderByName : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/orders/name/{orderName}", async (string orderName, ISender sender) =>
         {
-            var result = await sender.Send(orderName);
-            var response = result.Adapt<GetOrderByNameResult>();
-            return Results.Ok(response);
+            var query = new GetOrdersByNameQuery(orderName);
+            var result = await sender.Send(query);
+            return Results.Ok(result);
         })
         .WithName("GetOrderByName")
-        .Produces<GetOrderByNameResult>(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status400BadRequest)
-        .ProducesProblem(StatusCodes.Status404NotFound)
-        .WithSummary("Get Order By Name")
-        .WithDescription("Retrieves an order by its name.");
+        .Produces<GetOrdersByNameResult>(StatusCodes.Status200OK)
+        .WithSummary("Get Orders By Name")
+        .WithDescription("Gets orders matching the specified name");
     }
 }
